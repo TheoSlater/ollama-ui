@@ -1,51 +1,114 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/core";
-import "./App.css";
+"use client";
 
-function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+import { AppBar, Toolbar, Typography, Box, Button, Paper } from "@mui/material";
+import ollamaLogo from "./assets/ollama_normal.svg";
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
-  }
-
+export default function App() {
   return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
-
-      <div className="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+      {/* Header */}
+      <AppBar
+        position="static"
+        elevation={0}
+        sx={{
+          backgroundColor: "white",
+          borderBottom: "1px solid #e0e0e0",
         }}
       >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
-    </main>
+        <Toolbar sx={{ justifyContent: "space-between", px: 3 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <img
+              src={ollamaLogo}
+              alt="Ollama Logo"
+              style={{ width: 32, height: 32 }}
+            />
+            <Typography
+              variant="h6"
+              sx={{
+                color: "#212121",
+                fontWeight: 500,
+                fontSize: "1.125rem",
+              }}
+            >
+              Ollama UI
+            </Typography>
+          </Box>
+          <Box sx={{ display: "flex", gap: 3 }}>
+            <Button
+              sx={{
+                textTransform: "none",
+                fontWeight: 500,
+              }}
+            >
+              Chat
+            </Button>
+            <Button
+              sx={{
+                textTransform: "none",
+                fontWeight: 500,
+              }}
+            >
+              Models
+            </Button>
+            <Button
+              sx={{
+                textTransform: "none",
+                fontWeight: 500,
+              }}
+            >
+              Create
+            </Button>
+            <Button
+              sx={{
+                textTransform: "none",
+                fontWeight: 500,
+              }}
+            >
+              Settings
+            </Button>
+          </Box>
+        </Toolbar>
+      </AppBar>
+
+      {/* Main Chat Area */}
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          backgroundColor: "#fafafa",
+        }}
+      >
+        {/* Empty chat area */}
+      </Box>
+
+      {/* Footer Status */}
+      <Paper
+        elevation={0}
+        sx={{
+          px: 3,
+          py: 1.5,
+          backgroundColor: "white",
+          borderTop: "1px solid #e0e0e0",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          {/* <Typography variant="body2" sx={{ color: "#666666" }}>
+            Ollama running
+          </Typography>
+          <Typography variant="body2" sx={{ color: "#666666" }}>
+            |
+          </Typography>
+          <Typography variant="body2" sx={{ color: "#666666" }}>
+            Model: Llama3
+          </Typography>
+          <Typography variant="body2" sx={{ color: "#666666" }}>
+            |
+          </Typography>
+          <Typography variant="body2" sx={{ color: "#666666" }}>
+            Pulling: 43%
+          </Typography> */}
+        </Box>
+      </Paper>
+    </Box>
   );
 }
-
-export default App;
