@@ -2,21 +2,23 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AppProvider } from "@/stores/AppContext";
+import { ToastProvider } from "@/stores/ToastContext";
 import { Tabs } from "@/components/ui/tabs";
 import { Header } from "@/components/layout/Header";
 import { MainPanel } from "@/components/layout/MainPanel";
 import { StatusBar } from "@/components/layout/StatusBar";
 import { StartupAnimation } from "@/components/startup/StartupAnimation";
-import { cleanupTerminal } from "@/components/terminal/Terminal";
+import { terminalService } from "@/services/terminal";
 
 export default function App() {
   const [showStartup, setShowStartup] = useState(true);
   const [showMainApp, setShowMainApp] = useState(false);
 
   useEffect(() => {
-    // Cleanup terminal on app unmount
+    // Cleanup terminal service on app unmount
     return () => {
-      cleanupTerminal();
+      terminalService.cleanup();
     };
   }, []);
 
@@ -27,28 +29,32 @@ export default function App() {
 
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-      {showStartup && (
-        <StartupAnimation onComplete={handleStartupComplete} disabled />
-      )}
+      <AppProvider>
+        <ToastProvider>
+          {showStartup && (
+            <StartupAnimation onComplete={handleStartupComplete} disabled />
+          )}
 
-      {showMainApp && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          data-theme="light"
-          className="min-h-screen"
-        >
-          <Tabs
-            defaultValue="models"
-            className="flex flex-col h-screen bg-base-100"
-          >
-            <Header />
-            <MainPanel />
-            <StatusBar />
-          </Tabs>
-        </motion.div>
-      )}
+          {showMainApp && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              data-theme="light"
+              className="min-h-screen"
+            >
+              <Tabs
+                defaultValue="models"
+                className="flex flex-col h-screen bg-base-100"
+              >
+                <Header />
+                <MainPanel />
+                <StatusBar />
+              </Tabs>
+            </motion.div>
+          )}
+        </ToastProvider>
+      </AppProvider>
     </ThemeProvider>
   );
 }

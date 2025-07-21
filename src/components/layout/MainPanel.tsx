@@ -1,15 +1,5 @@
 import { TabsContent } from "@/components/ui/tabs";
-import { Button } from "../ui/button";
-import { runShellCommand } from "@/api/terminal";
-
-async function handleListModels() {
-  try {
-    await runShellCommand("ollama", ["list"]);
-    console.log("Ollama list command executed");
-  } catch (error) {
-    console.error("Error executing ollama list:", error);
-  }
-}
+import { ModelPanel } from "@/Models/ModelPanel";
 
 export function MainPanel() {
   return (
@@ -20,12 +10,7 @@ export function MainPanel() {
 
       <TabsContent value="models" className="h-full m-0">
         <div className="h-full">
-          <div className="flex items-center justify-center h-full">
-            <p className="text-lg text-base-content/70">
-              Models will be displayed here.
-            </p>
-            <Button onClick={handleListModels}>List Installed Models</Button>
-          </div>
+          <ModelPanel />
         </div>
       </TabsContent>
 
