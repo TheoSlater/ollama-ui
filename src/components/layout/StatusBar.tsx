@@ -2,6 +2,7 @@
 import { SquareTerminal } from "lucide-react";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Terminal } from "@/components/terminal/Terminal";
 import { useState } from "react";
 
 export function StatusBar() {
@@ -39,8 +40,13 @@ export function StatusBar() {
         </div>
       </footer>
       <SheetContent side="bottom" className="h-1/2">
-        <div className="p-4">
-          <h2 className="text-lg font-semibold mb-4">Terminal</h2>
+        <div className="flex flex-col h-full">
+          <div className="flex items-center justify-between p-4 border-b">
+            <h2 className="text-lg font-semibold">Terminal</h2>
+          </div>
+          <div className="flex-1 overflow-hidden">
+            <Terminal />
+          </div>
         </div>
       </SheetContent>
     </Sheet>

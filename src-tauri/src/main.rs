@@ -14,9 +14,25 @@ async fn run_command(window: Window, cmd: String, args: Vec<String>) -> Result<(
         .map_err(|e| e.to_string())?;
 
     while let Some(event) = rx.recv().await {
-        if let CommandEvent::Stdout(line_bytes) = event {
-            let line = String::from_utf8_lossy(&line_bytes).to_string();
-            window.emit("terminal-output", line).map_err(|e| e.to_string())?;
+        match event {
+            CommandEvent::Stdout(line_bytes) => {
+                let line = String::from_utf8_lossy(&line_bytes).to_string();
+                window.emit("terminal-output", line).map_err(|e| e.to_string())?;
+            }
+            CommandEvent::Stderr(line_bytes) => {
+                let line = String::from_utf8_lossy(&line_bytes).to_string();
+                window.emit("terminal-output", format!("\x1b[31m{}\x1b[0m", line)).map_err(|e| e.to_string())?;
+            }
+            CommandEvent::Terminated(payload) => {
+                let status_msg = if payload.code.unwrap_or(-1) == 0 {
+                    ""
+                } else {
+                    &format!("\x1b[31mProcess exited with code {}\x1b[0m\n", payload.code.unwrap_or(-1))
+                };
+                window.emit("terminal-output", status_msg).map_err(|e| e.to_string())?;
+                break;
+            }
+            _ => {}
         }
     }
 
