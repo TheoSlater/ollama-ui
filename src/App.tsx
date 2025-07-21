@@ -40,7 +40,7 @@ export default function App() {
           className="min-h-screen"
         >
           <Tabs
-            defaultValue="chat"
+            defaultValue="models"
             className="flex flex-col h-screen bg-base-100"
           >
             <Header />

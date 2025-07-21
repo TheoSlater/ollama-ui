@@ -2,7 +2,6 @@ import { useEffect, useRef, useCallback } from "react";
 import { Terminal as XTerm } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import { runShellCommand } from "@/api/terminal";
-import { listen, UnlistenFn } from "@tauri-apps/api/event";
 import "@xterm/xterm/css/xterm.css";
 
 interface TerminalProps {
@@ -12,8 +11,8 @@ interface TerminalProps {
 // Global terminal instance to persist across sheet open/close
 let globalTerminal: XTerm | null = null;
 let globalFitAddon: FitAddon | null = null;
-let globalUnlisten: UnlistenFn | null = null;
 let globalContainer: HTMLDivElement | null = null;
+let terminalOutputHandler: ((event: CustomEvent) => void) | null = null;
 let currentCommand = "";
 let isInitialized = false;
 
@@ -60,8 +59,12 @@ export function Terminal({ className }: TerminalProps) {
 
       try {
         await runShellCommand(cmd, args);
+        // Show prompt after command execution
+        setTimeout(() => {
+          globalTerminal?.write("$ ");
+        }, 100);
       } catch (error) {
-        globalTerminal?.writeln(`Error: ${error}`);
+        globalTerminal?.writeln(`\x1b[31mError: ${error}\x1b[0m`);
         globalTerminal?.write("$ ");
       }
     };
@@ -99,15 +102,17 @@ export function Terminal({ className }: TerminalProps) {
       }
     });
 
-    // Listen for terminal output from Tauri
-    globalUnlisten = await listen("terminal-output", (event) => {
-      const output = event.payload as string;
+    // Listen for terminal output from frontend events
+    const handleTerminalOutput = (event: CustomEvent) => {
+      const output = event.detail;
       globalTerminal?.write(output);
-      if (!output.endsWith("\n")) {
-        globalTerminal?.writeln("");
-      }
-      globalTerminal?.write("$ ");
-    });
+    };
+
+    terminalOutputHandler = handleTerminalOutput;
+    window.addEventListener(
+      "terminal-output",
+      handleTerminalOutput as EventListener
+    );
 
     isInitialized = true;
   }, []);
@@ -172,9 +177,12 @@ export function Terminal({ className }: TerminalProps) {
 
 // Export cleanup function for app shutdown
 export const cleanupTerminal = () => {
-  if (globalUnlisten) {
-    globalUnlisten();
-    globalUnlisten = null;
+  if (terminalOutputHandler) {
+    window.removeEventListener(
+      "terminal-output",
+      terminalOutputHandler as EventListener
+    );
+    terminalOutputHandler = null;
   }
   if (globalContainer && globalContainer.parentNode) {
     globalContainer.parentNode.removeChild(globalContainer);
