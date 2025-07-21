@@ -1,77 +1,23 @@
-import { Box, Container, Fade } from "@mui/material";
-import ChatPanel from "../panels/ChatPanel";
-import ModelsPanel from "../panels/ModelsPanel";
-import ModelfilePanel from "../panels/ModelfilePanel";
-import SettingsPanel from "../panels/SettingsPanel";
-import { OllamaModel } from "../../services/ollamaService";
+import { TabsContent } from "@/components/ui/tabs";
 
-interface MainPanelProps {
-  currentTab: number;
-  models: OllamaModel[];
-  onPullModel: (modelName: string) => Promise<void>;
-  onRunModel: (modelName: string) => Promise<void>;
-  onDeleteModel: (modelName: string) => Promise<void>;
-  onRefreshModels: () => Promise<void>;
-}
-
-export default function MainPanel({
-  currentTab,
-  models,
-  onPullModel,
-  onRunModel,
-  onDeleteModel,
-  onRefreshModels,
-}: MainPanelProps) {
-  const renderTabContent = () => {
-    switch (currentTab) {
-      case 0:
-        return <ChatPanel models={models} />;
-      case 1:
-        return (
-          <ModelsPanel
-            models={models}
-            onPullModel={onPullModel}
-            onRunModel={onRunModel}
-            onDeleteModel={onDeleteModel}
-            onRefreshModels={onRefreshModels}
-          />
-        );
-      case 2:
-        return <ModelfilePanel />;
-      case 3:
-        return <SettingsPanel />;
-      default:
-        return <ChatPanel models={models} />;
-    }
-  };
-
+export function MainPanel() {
   return (
-    <Box
-      component="main"
-      sx={{
-        flexGrow: 1,
-        backgroundColor: "#fafafa",
-        overflow: "hidden",
-      }}
-    >
-      <Container
-        maxWidth={false}
-        sx={{
-          height: "100%",
-          py: 3,
-          px: 3,
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <Fade in={true} timeout={300}>
-          <Box
-            sx={{ height: "100%", display: "flex", flexDirection: "column" }}
-          >
-            {renderTabContent()}
-          </Box>
-        </Fade>
-      </Container>
-    </Box>
+    <div className="flex-1 bg-base-200/30">
+      <TabsContent value="chat" className="h-full m-0">
+        <div className="h-full"></div>
+      </TabsContent>
+
+      <TabsContent value="models" className="h-full m-0">
+        <div className="h-full"></div>
+      </TabsContent>
+
+      <TabsContent value="create" className="h-full m-0">
+        <div className="h-full"></div>
+      </TabsContent>
+
+      <TabsContent value="settings" className="h-full m-0">
+        <div className="h-full"></div>
+      </TabsContent>
+    </div>
   );
 }

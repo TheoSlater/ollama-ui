@@ -1,89 +1,48 @@
-import { Paper, Box, Typography, Chip, IconButton } from "@mui/material";
-import { Terminal } from "@mui/icons-material";
+// import { Progress } from "@/components/ui/progress";
+import { SquareTerminal } from "lucide-react";
+import { Button } from "../ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useState } from "react";
 
-interface StatusBarProps {
-  isOllamaRunning: boolean;
-  currentModel?: string;
-  activeCommand?: string;
-  progress?: number;
-  onTerminalToggle: () => void;
-}
+export function StatusBar() {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-export default function StatusBar({
-  isOllamaRunning,
-  currentModel,
-  activeCommand,
-  progress,
-  onTerminalToggle,
-}: StatusBarProps) {
+  const handleOpenSheet = () => {
+    setIsSheetOpen(true);
+  };
+
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        px: 3,
-        py: 1.5,
-        backgroundColor: "white",
-        borderTop: "1px solid #e0e0e0",
-        borderRadius: 0,
-      }}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <Chip
-            label={isOllamaRunning ? "Ollama Running" : "Ollama Stopped"}
-            color={isOllamaRunning ? "success" : "error"}
-            variant="outlined"
-            size="small"
-            sx={{
-              fontSize: "0.75rem",
-              height: 24,
-              borderRadius: "12px",
-            }}
-          />
-
-          {currentModel && (
-            <>
-              <Typography variant="body2" sx={{ color: "#666666" }}>
-                |
-              </Typography>
-              <Typography variant="body2" sx={{ color: "#666666" }}>
-                Model: {currentModel}
-              </Typography>
-            </>
-          )}
-
-          {activeCommand && (
-            <>
-              <Typography variant="body2" sx={{ color: "#666666" }}>
-                |
-              </Typography>
-              <Typography variant="body2" sx={{ color: "#666666" }}>
-                {activeCommand}
-                {progress !== undefined && `: ${progress}%`}
-              </Typography>
-            </>
-          )}
-        </Box>
-
-        <IconButton
-          onClick={onTerminalToggle}
-          size="small"
-          sx={{
-            color: "#666666",
-            "&:hover": {
-              backgroundColor: "#f5f5f5",
-            },
-          }}
-        >
-          <Terminal fontSize="small" />
-        </IconButton>
-      </Box>
-    </Paper>
+    <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+      <footer className="px-6 py-2 bg-base-100 border-t border-base-300">
+        <div className="flex items-center justify-between gap-4 text-sm text-base-content/70">
+          <div className="flex items-center gap-4">
+            {/* <span className="flex items-center gap-1">
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            Ollama running
+          </span>
+          <span>Model: Llama3</span>
+          <div className="flex items-center gap-2">
+            <span>Pulling: 43%</span>
+            <Progress value={43} className="w-20 h-1" />
+          </div> */}
+          </div>
+          <SheetTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8"
+              onClick={handleOpenSheet}
+            >
+              <SquareTerminal />
+            </Button>
+          </SheetTrigger>
+        </div>
+      </footer>
+      <SheetContent side="bottom" className="h-1/2">
+        <div className="p-4">
+          <h2 className="text-lg font-semibold mb-4">Terminal</h2>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }

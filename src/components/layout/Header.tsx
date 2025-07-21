@@ -1,65 +1,44 @@
-import { AppBar, Toolbar, Typography, Box, Tabs, Tab } from "@mui/material";
-import ollamaLogo from "../../assets/ollama_normal.svg";
+import { TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ollamaNormal from "@/assets/ollama_normal.svg";
 
-interface HeaderProps {
-  currentTab: number;
-  onTabChange: (event: React.SyntheticEvent, newValue: number) => void;
-}
-
-const tabLabels = ["Chat", "Models", "Modelfile", "Settings"];
-
-export default function Header({ currentTab, onTabChange }: HeaderProps) {
+export function Header() {
   return (
-    <AppBar
-      position="static"
-      elevation={0}
-      sx={{
-        backgroundColor: "white",
-        borderBottom: "1px solid #e0e0e0",
-      }}
-    >
-      <Toolbar sx={{ justifyContent: "space-between", px: 3 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-          <img
-            src={ollamaLogo}
-            alt="Ollama Logo"
-            style={{ width: 32, height: 32 }}
-          />
-          <Typography
-            variant="h6"
-            sx={{
-              color: "#212121",
-              fontWeight: 500,
-              fontSize: "1.125rem",
-            }}
-          >
-            Ollama UI
-          </Typography>
-        </Box>
+    <div className="navbar bg-base-100 border-b border-base-300 px-6 py-3">
+      <div className="navbar-start">
+        <div className="flex items-center gap-2">
+          <img src={ollamaNormal} alt="Ollama Logo" className="w-10 h-10" />
+          <span className="text-lg font-medium">Ollama UI</span>
+        </div>
+      </div>
 
-        <Tabs
-          value={currentTab}
-          onChange={onTabChange}
-          sx={{
-            "& .MuiTab-root": {
-              textTransform: "none",
-              fontWeight: 500,
-              color: "#666666",
-              "&.Mui-selected": {
-                color: "#1976d2",
-              },
-            },
-            "& .MuiTabs-indicator": {
-              backgroundColor: "#1976d2",
-              borderRadius: "2px 2px 0 0",
-            },
-          }}
-        >
-          {tabLabels.map((label, index) => (
-            <Tab key={index} label={label} />
-          ))}
-        </Tabs>
-      </Toolbar>
-    </AppBar>
+      <div className="navbar-end">
+        <TabsList className="bg-transparent border-none p-0 h-auto space-x-5">
+          <TabsTrigger
+            value="chat"
+            className="data-[state=active]:bg-base-200 data-[state=active]:text-base-content bg-transparent text-base-content/70 hover:text-base-content hover:bg-base-200/50"
+          >
+            Chat
+          </TabsTrigger>
+          <TabsTrigger
+            value="models"
+            className="data-[state=active]:bg-base-200 data-[state=active]:text-base-content bg-transparent text-base-content/70 hover:text-base-content hover:bg-base-200/50"
+          >
+            Models
+          </TabsTrigger>
+          <TabsTrigger
+            value="create"
+            className="data-[state=active]:bg-base-200 data-[state=active]:text-base-content bg-transparent text-base-content/70 hover:text-base-content hover:bg-base-200/50"
+          >
+            Create
+          </TabsTrigger>
+          <TabsTrigger
+            value="settings"
+            className="data-[state=active]:bg-base-200 data-[state=active]:text-base-content bg-transparent text-base-content/70 hover:text-base-content hover:bg-base-200/50"
+          >
+            Settings
+          </TabsTrigger>
+        </TabsList>
+      </div>
+    </div>
   );
 }
