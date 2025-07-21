@@ -13,12 +13,12 @@ export function Header() {
 
       <div className="navbar-end">
         <TabsList className="bg-transparent border-none p-0 h-auto space-x-5">
-          <TabsTrigger
+          {/* <TabsTrigger
             value="chat"
             className="data-[state=active]:bg-base-200 data-[state=active]:text-base-content bg-transparent text-base-content/70 hover:text-base-content hover:bg-base-200/50"
           >
             Chat
-          </TabsTrigger>
+          </TabsTrigger> */}
           <TabsTrigger
             value="models"
             className="data-[state=active]:bg-base-200 data-[state=active]:text-base-content bg-transparent text-base-content/70 hover:text-base-content hover:bg-base-200/50"
