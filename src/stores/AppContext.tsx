@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, ReactNode } from "react";
 import type { AppState, OllamaModel } from "@/types";
 
-// Define action types
+// define the action types here
 type AppAction =
   | { type: "SET_LOADING"; payload: boolean }
   | { type: "SET_ERROR"; payload: string | null }
@@ -25,7 +25,7 @@ const initialState: AppState = {
   },
 };
 
-// Reducer function
+// Reducer function. hate this repetive crap
 function appReducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
     case "SET_LOADING":
@@ -90,16 +90,13 @@ function appReducer(state: AppState, action: AppAction): AppState {
   }
 }
 
-// Context type
 interface AppContextType {
   state: AppState;
   dispatch: React.Dispatch<AppAction>;
 }
 
-// Create context
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-// Provider component
 interface AppProviderProps {
   children: ReactNode;
 }
@@ -123,5 +120,4 @@ export function useAppContext() {
   return context;
 }
 
-// Export action types for use in hooks
 export type { AppAction };

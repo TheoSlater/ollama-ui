@@ -1,4 +1,3 @@
-// import { Progress } from "@/components/ui/progress";
 import { SquareTerminal } from "lucide-react";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -16,17 +15,7 @@ export function StatusBar() {
     <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
       <footer className="px-6 py-2 bg-base-100 border-t border-base-300">
         <div className="flex items-center justify-between gap-4 text-sm text-base-content/70">
-          <div className="flex items-center gap-4">
-            {/* <span className="flex items-center gap-1">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            Ollama running
-          </span>
-          <span>Model: Llama3</span>
-          <div className="flex items-center gap-2">
-            <span>Pulling: 43%</span>
-            <Progress value={43} className="w-20 h-1" />
-          </div> */}
-          </div>
+          <div className="flex items-center gap-4"></div>
           <SheetTrigger asChild>
             <Button
               variant="ghost"

@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { useOllama } from "@/hooks";
-import { useToastContext } from "@/stores/ToastContext";
 import { Loader2, RefreshCw, Trash2, Eye, Download } from "lucide-react";
 
 export function ModelPanel() {
@@ -10,59 +9,37 @@ export function ModelPanel() {
     models,
     loading,
     error,
-    loadModels,
+    loadModelsWithDetails,
     removeModel,
     pullModel,
-    listModelsInTerminal,
     getModelCount,
     getTotalSize,
   } = useOllama();
 
-  const { success, error: showError } = useToastContext();
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
   const [pullModelName, setPullModelName] = useState("");
   const [isPulling, setIsPulling] = useState(false);
 
   const handleRefresh = async () => {
     try {
-      await loadModels();
-      success("Models refreshed successfully");
+      await loadModelsWithDetails();
     } catch (err) {
-      showError(
-        "Failed to refresh models",
-        err instanceof Error ? err.message : "Unknown error"
-      );
-    }
-  };
-
-  const handleShowInTerminal = async () => {
-    try {
-      await listModelsInTerminal();
-      success("Command sent to terminal");
-    } catch (err) {
-      showError(
-        "Failed to execute command",
-        err instanceof Error ? err.message : "Unknown error"
-      );
+      console.error("Failed to refresh models:", err);
     }
   };
 
   const handlePullModel = async () => {
     if (!pullModelName.trim()) {
-      showError("Please enter a model name");
+      console.error("Please enter a model name");
       return;
     }
 
     setIsPulling(true);
     try {
       await pullModel(pullModelName.trim());
-      success(`Successfully pulled ${pullModelName}`);
       setPullModelName("");
     } catch (err) {
-      showError(
-        "Failed to pull model",
-        err instanceof Error ? err.message : "Unknown error"
-      );
+      console.error("Failed to pull model:", err);
     } finally {
       setIsPulling(false);
     }
@@ -75,16 +52,12 @@ export function ModelPanel() {
 
     try {
       await removeModel(modelName);
-      success(`Successfully removed ${modelName}`);
       // Clear selection if this model was selected
       if (selectedModel === modelName) {
         setSelectedModel(null);
       }
     } catch (err) {
-      showError(
-        "Failed to remove model",
-        err instanceof Error ? err.message : "Unknown error"
-      );
+      console.error("Failed to remove model:", err);
     }
   };
 
@@ -95,7 +68,23 @@ export function ModelPanel() {
 
   const formatDate = (dateString: string): string => {
     try {
-      return new Date(dateString).toLocaleDateString();
+      // If it's already a relative date like "2 months ago", return as is
+      if (
+        dateString.includes("ago") ||
+        dateString.includes("day") ||
+        dateString.includes("hour")
+      ) {
+        return dateString;
+      }
+
+      // Try to parse as a proper date
+      const date = new Date(dateString);
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleDateString();
+      }
+
+      // Fallback to original string
+      return dateString;
     } catch {
       return dateString;
     }
@@ -142,11 +131,12 @@ export function ModelPanel() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={handleShowInTerminal} variant="outline">
-            <Eye className="w-4 h-4 mr-2" />
-            Show in Terminal
-          </Button>
-          <Button onClick={handleRefresh} variant="outline" disabled={loading}>
+          <Button
+            className="btn"
+            onClick={handleRefresh}
+            variant="outline"
+            disabled={loading}
+          >
             <RefreshCw
               className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`}
             />
@@ -158,7 +148,7 @@ export function ModelPanel() {
       {/* Pull Model Section */}
       <div className="mb-6 p-4 border border-base-300 rounded-lg bg-base-100">
         <h3 className="text-lg font-medium mb-3">Pull New Model</h3>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <Input
             placeholder="Enter model name (e.g., llama3:latest)"
             value={pullModelName}
@@ -171,6 +161,8 @@ export function ModelPanel() {
             disabled={isPulling}
           />
           <Button
+            className="btn"
+            variant={isPulling ? "secondary" : "default"}
             onClick={handlePullModel}
             disabled={isPulling || !pullModelName.trim()}
           >
@@ -202,11 +194,7 @@ export function ModelPanel() {
             {models.map((model) => (
               <div
                 key={model.name}
-                className={`p-4 rounded-lg border transition-colors hover:bg-base-200/50 cursor-pointer ${
-                  selectedModel === model.name
-                    ? "border-primary bg-base-200/30"
-                    : "border-base-300"
-                }`}
+                className={`p-4 rounded-lg border transition-colors hover:bg-base-200/50 cursor-pointer border-base-300`}
                 onClick={() =>
                   setSelectedModel(
                     selectedModel === model.name ? null : model.name
@@ -228,22 +216,22 @@ export function ModelPanel() {
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
+                      className="btn"
                       size="sm"
-                      variant="outline"
+                      variant="ghost"
                       onClick={(e) => {
                         e.stopPropagation();
-                        // TODO: Show model details in a modal
-                        showError(
-                          "Feature coming soon",
-                          "Model details view is not implemented yet"
-                        );
+                        // TODO: Show model details in a modal or something
+                        console.log("Model details feature coming soon");
                       }}
+                      disabled
                     >
                       <Eye className="w-4 h-4" />
                     </Button>
                     <Button
+                      className="btn"
                       size="sm"
-                      variant="outline"
+                      variant="default"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleRemoveModel(model.name);

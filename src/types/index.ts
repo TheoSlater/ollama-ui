@@ -46,3 +46,9 @@ export interface UseCommandOptions {
   onError?: (error: string) => void;
   showInTerminal?: boolean;
 }
+
+export interface UseCommandOptions {
+  onSuccess?: (output: string) => void;
+  onError?: (error: string) => void;
+  showInTerminal?: boolean;
+}

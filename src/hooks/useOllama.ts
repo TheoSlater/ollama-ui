@@ -11,21 +11,31 @@ export function useOllama() {
   const { execute: executeCommand, isLoading: commandLoading } = useCommand();
 
   // Load models
-  const loadModels = useCallback(async () => {
-    dispatch({ type: "SET_LOADING", payload: true });
-    dispatch({ type: "SET_ERROR", payload: null });
+  const loadModels = useCallback(
+    async (withDetails: boolean = false) => {
+      dispatch({ type: "SET_LOADING", payload: true });
+      dispatch({ type: "SET_ERROR", payload: null });
 
-    try {
-      const models = await ollamaService.listModels();
-      dispatch({ type: "SET_MODELS", payload: models });
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to load models";
-      dispatch({ type: "SET_ERROR", payload: errorMessage });
-    } finally {
-      dispatch({ type: "SET_LOADING", payload: false });
-    }
-  }, [dispatch]);
+      try {
+        const models = withDetails
+          ? await ollamaService.listModelsWithDetails()
+          : await ollamaService.listModels();
+        dispatch({ type: "SET_MODELS", payload: models });
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Failed to load models";
+        dispatch({ type: "SET_ERROR", payload: errorMessage });
+      } finally {
+        dispatch({ type: "SET_LOADING", payload: false });
+      }
+    },
+    [dispatch]
+  );
+
+  // Load models with detailed information
+  const loadModelsWithDetails = useCallback(async () => {
+    return loadModels(true);
+  }, [loadModels]);
 
   // Pull a model
   const pullModel = useCallback(
@@ -34,7 +44,6 @@ export function useOllama() {
 
       try {
         await ollamaService.pullModel(modelName);
-        // Reload models after successful pull
         await loadModels();
       } catch (error) {
         const errorMessage =
@@ -96,10 +105,10 @@ export function useOllama() {
     return executeCommand("ollama", ["list"]);
   }, [executeCommand]);
 
-  // Auto-load models on mount
+  // Auto-load models with details on mount
   useEffect(() => {
-    loadModels();
-  }, [loadModels]);
+    loadModelsWithDetails();
+  }, [loadModelsWithDetails]);
 
   return {
     // State
@@ -109,6 +118,7 @@ export function useOllama() {
 
     // Actions
     loadModels,
+    loadModelsWithDetails,
     pullModel,
     removeModel,
     showModel,

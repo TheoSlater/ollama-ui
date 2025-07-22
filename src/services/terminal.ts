@@ -26,33 +26,46 @@ export class TerminalService {
     args: string[] = []
   ): Promise<CommandResult> {
     try {
+      console.log(
+        `[TerminalService] Executing command: ${cmd} ${args.join(" ")}`
+      );
       const command = Command.create(cmd, args);
       let stdout = "";
       let stderr = "";
 
       // Set up output handlers
       command.stdout.on("data", (line) => {
-        stdout += line;
+        console.log(`[TerminalService] stdout: ${line}`);
+        stdout += line + "\n"; // <-- ensure newlines for each chunk
         this.notifyOutputListeners(line);
-        this.emitTerminalOutput(line);
+        this.emitTerminalOutput(line + "\n"); // <-- ensure newlines for each chunk
       });
 
       command.stderr.on("data", (err) => {
-        stderr += err;
+        console.log(`[TerminalService] stderr: ${err}`);
+        stderr += err + "\n"; // <-- ensure newlines for each chunk
         const errorOutput = `\x1b[31m${err}\x1b[0m`;
         this.notifyErrorListeners(err);
-        this.emitTerminalOutput(errorOutput);
+        this.emitTerminalOutput(errorOutput + "\n"); // <-- ensure newlines for each chunk
       });
 
       // Execute the command
+      console.log(`[TerminalService] Starting command execution...`);
       const output = await command.execute();
+      console.log(`[TerminalService] Command completed with output:`, output);
 
       return {
         status: output.code === 0 ? "success" : "error",
-        output: stdout,
-        error: stderr || undefined,
+        output: output.stdout || stdout,
+        error:
+          output.code !== 0
+            ? output.stderr ||
+              stderr ||
+              `Command failed with exit code ${output.code}`
+            : undefined,
       };
     } catch (error) {
+      console.error(`[TerminalService] Command execution failed:`, error);
       const errorMsg = error instanceof Error ? error.message : String(error);
       this.notifyErrorListeners(errorMsg);
       this.emitTerminalOutput(`\x1b[31mError: ${errorMsg}\x1b[0m\n`);
@@ -76,6 +89,75 @@ export class TerminalService {
       throw new Error(result.error || "Command failed");
     }
     return result.output || "";
+  }
+
+  /**
+   * Execute a command with real-time progress tracking
+   */
+  public async executeCommandWithProgress(
+    cmd: string,
+    args: string[] = [],
+    onProgress?: (output: string) => void
+  ): Promise<CommandResult> {
+    try {
+      console.log(
+        `[TerminalService] Executing command with progress: ${cmd} ${args.join(
+          " "
+        )}`
+      );
+      const command = Command.create(cmd, args);
+      let stdout = "";
+      let stderr = "";
+
+      // Set up output handlers with progress tracking
+      command.stdout.on("data", (line) => {
+        console.log(`[TerminalService] stdout: ${line}`);
+        stdout += line + "\n"; // <-- ensure newlines for each chunk
+        this.notifyOutputListeners(line);
+        this.emitTerminalOutput(line + "\n"); // <-- ensure newlines for each chunk
+
+        // Call progress callback if provided
+        if (onProgress) {
+          onProgress(line);
+        }
+      });
+
+      command.stderr.on("data", (err) => {
+        console.log(`[TerminalService] stderr: ${err}`);
+        stderr += err + "\n"; // <-- ensure newlines for each chunk
+        const errorOutput = `\x1b[31m${err}\x1b[0m`;
+        this.notifyErrorListeners(err);
+        this.emitTerminalOutput(errorOutput + "\n"); // <-- ensure newlines for each chunk
+      });
+
+      // Execute the command
+      console.log(
+        `[TerminalService] Starting command execution with progress...`
+      );
+      const output = await command.execute();
+      console.log(`[TerminalService] Command completed with output:`, output);
+
+      return {
+        status: output.code === 0 ? "success" : "error",
+        output: output.stdout || stdout,
+        error:
+          output.code !== 0
+            ? output.stderr ||
+              stderr ||
+              `Command failed with exit code ${output.code}`
+            : undefined,
+      };
+    } catch (error) {
+      console.error(`[TerminalService] Command execution failed:`, error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      this.notifyErrorListeners(errorMsg);
+      this.emitTerminalOutput(`\x1b[31mError: ${errorMsg}\x1b[0m\n`);
+
+      return {
+        status: "error",
+        error: errorMsg,
+      };
+    }
   }
 
   /**

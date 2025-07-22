@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AppProvider } from "@/stores/AppContext";
-import { ToastProvider } from "@/stores/ToastContext";
 import { Tabs } from "@/components/ui/tabs";
 import { Header } from "@/components/layout/Header";
 import { MainPanel } from "@/components/layout/MainPanel";
@@ -30,30 +29,28 @@ export default function App() {
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <AppProvider>
-        <ToastProvider>
-          {showStartup && (
-            <StartupAnimation onComplete={handleStartupComplete} disabled />
-          )}
+        {showStartup && (
+          <StartupAnimation onComplete={handleStartupComplete} disabled />
+        )}
 
-          {showMainApp && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              data-theme="light"
-              className="min-h-screen"
+        {showMainApp && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            data-theme="light"
+            className="min-h-screen"
+          >
+            <Tabs
+              defaultValue="models"
+              className="flex flex-col h-screen bg-base-100"
             >
-              <Tabs
-                defaultValue="models"
-                className="flex flex-col h-screen bg-base-100"
-              >
-                <Header />
-                <MainPanel />
-                <StatusBar />
-              </Tabs>
-            </motion.div>
-          )}
-        </ToastProvider>
+              <Header />
+              <MainPanel />
+              <StatusBar />
+            </Tabs>
+          </motion.div>
+        )}
       </AppProvider>
     </ThemeProvider>
   );
