@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { useOllama } from "@/hooks";
+
 import { Loader2, RefreshCw, Trash2, Eye, Download } from "lucide-react";
 
 export function ModelPanel() {
@@ -228,6 +229,7 @@ export function ModelPanel() {
                     >
                       <Eye className="w-4 h-4" />
                     </Button>
+
                     <Button
                       className="btn"
                       size="sm"

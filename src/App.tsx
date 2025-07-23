@@ -29,9 +29,7 @@ export default function App() {
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <AppProvider>
-        {showStartup && (
-          <StartupAnimation onComplete={handleStartupComplete} disabled />
-        )}
+        {showStartup && <StartupAnimation onComplete={handleStartupComplete} />}
 
         {showMainApp && (
           <motion.div
