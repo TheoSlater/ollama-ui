@@ -16,7 +16,9 @@ export function MainPanel() {
       </TabsContent>
 
       <TabsContent value="create" className="h-full m-0">
-        <div className="h-full">{/* <CreatePanel /> */}</div>
+        <div className="h-full">
+          <CreatePanel />
+        </div>
       </TabsContent>
 
       <TabsContent value="settings" className="h-full m-0">
